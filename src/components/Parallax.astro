@@ -1,0 +1,67 @@
+---
+// No frontmatter props required
+---
+
+<div class="parallax" aria-hidden>
+	<div class="parallax-layer layer-1"></div>
+	<div class="parallax-layer layer-2"></div>
+</div>
+
+<script>
+	(function () {
+		const root = document.currentScript && document.currentScript.parentElement
+		if (!root) return
+		const layer1 = root.querySelector('.layer-1')
+		const layer2 = root.querySelector('.layer-2')
+		if (!layer1 || !layer2) return
+
+		function mapRange(value, inMin, inMax, outMin, outMax) {
+			const t = Math.max(0, Math.min(1, (value - inMin) / (inMax - inMin)))
+			return outMin + t * (outMax - outMin)
+		}
+
+		let ticking = false
+		function onScroll() {
+			if (!ticking) {
+				requestAnimationFrame(() => {
+					const s = window.scrollY || window.pageYOffset
+					layer1.style.transform = `translateY(${mapRange(s, 0, 800, 0, -40)}px)`
+					layer2.style.transform = `translateY(${mapRange(s, 0, 800, 0, -80)}px)`
+					ticking = false
+				})
+				ticking = true
+			}
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true })
+		onScroll()
+		// optional: cleanup on unload
+		window.addEventListener('beforeunload', () => window.removeEventListener('scroll', onScroll))
+	})()
+</script>
+
+<style>
+	.parallax {
+		position: relative;
+		overflow: visible;
+		pointer-events: none;
+	}
+	.parallax-layer {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		transform: translateZ(0);
+		will-change: transform;
+	}
+	.parallax .layer-1 {
+		/* simple visual placeholder — replace with your content/graphics */
+		background: linear-gradient(135deg, rgba(0,0,0,0.06), rgba(0,0,0,0.0));
+		z-index: 1;
+	}
+	.parallax .layer-2 {
+		background: linear-gradient(135deg, rgba(0,0,0,0.12), rgba(0,0,0,0.0));
+		z-index: 0;
+	}
+</style>
